@@ -17,6 +17,7 @@ import java.util.List;
 @Service
 public class RecipeCostService implements IRecipeCostService{
 
+
     private final IRecipeCostRepository iRecipeCostRepo;
     private final RecipeDetailService recDetServ;
     private final FinancialAnalysisService finAnaServ;
@@ -30,15 +31,9 @@ public class RecipeCostService implements IRecipeCostService{
         this.iRecDetRepo = iRecDetRepo;
     }
 
-    //public RecipeCost createRecipeCost(RecipeDto recipeDto, List<RecipeDetail> recipeDetailList, FinancialDto financialDto){
-    //public RecipeCost createRecipeCost(RecipeDto recipeDto, FinancialDto financialDto){
-    //public RecipeCost createRecipeCost(RecipeCostRequestDto recipeCostRequestDto){
+
     @Transactional
     public RecipeCost createRecipeCost(RecipeDto recipeDto, Long id){
-
-        //Get RecipeDto and FinancialDto from RecipeCostRequestDto
-            //RecipeDto recipeDto = recipeCostRequestDto.getRecipeDto();
-            //FinancialDto financialDto = recipeCostRequestDto.getFinancialDto();
 
         // Creates "recipeDetailList" through RecipeDetailService using SupplyPerRecipeDto in RecipeDto
         List<RecipeDetail> recipeDetailList = recDetServ.createRecipeDetailList(recipeDto);
@@ -48,28 +43,43 @@ public class RecipeCostService implements IRecipeCostService{
         int markingMargin = recipeDto.getMarkingMarginDto();
         int effectivePrice = getEffectivePriceRoundedTo5(totalVariableCost, markingMargin);
         Double marginalContribution = getMarginalContribution(totalVariableCost, effectivePrice);
-
-        //int fixCostIncidence = finAnaServ.calculateFixCostIncidence(financialDto);
         int fixCostIncidence = finAnaServ.getFixCostIncidenceById(id);
-        System.out.println("Fix Cost Incidence created satisfactory: " + fixCostIncidence);
+        System.out.println("Fix Cost Incidence got satisfactory: " + fixCostIncidence);
+        int unitsPerRecipe = recipeDto.getUnitsPerRecipeDto();
         
         RecipeCost recipeCost = new RecipeCost();
         recipeCost.setRecipeName(recipeDto.getRecipeName());
-        recipeCost.setMarkingMargin(recipeDto.getMarkingMarginDto());
-        recipeCost.setUnitsPerRecip(recipeDto.getUnitsPerRecipeDto());
+        recipeCost.setMarkingMargin(markingMargin);
+        recipeCost.setUnitsPerRecipe(unitsPerRecipe);
         //recipeCost.setRecipeDetailList(recipeDetailList);
         recipeCost.setVariableCost(totalVariableCost);
-        recipeCost.setIngreVarCost(getVariableCostBySuppType(recipeDetailList, "ingredient" ));
+
+        recipeCost.setIngreVarCost(getVariableCostBySuppType(recipeDetailList, "Ingrediente" ));
         recipeCost.setPackVarCost(getVariableCostBySuppType(recipeDetailList, "Packaging"));
         recipeCost.setLaborVarCost(getVariableCostBySuppType(recipeDetailList, "Labor"));
+
         recipeCost.setEffectivePrice(effectivePrice);
+        recipeCost.setUnitEffectivePrice(effectivePrice / unitsPerRecipe);
+
         recipeCost.setMarginalContribution(marginalContribution);
         recipeCost.setFixCostDistribution( effectivePrice * fixCostIncidence / 100.0);
         recipeCost.setProfit(marginalContribution - recipeCost.getFixCostDistribution());
+
+        recipeCost.setUnitTotalVarCost(getTotalUnitVariableCosts(recipeDetailList));
+        System.out.println("El total de los costos unitarios variables es: " + getTotalUnitVariableCosts(recipeDetailList));
+
+        recipeCost.setUnitIngreVarCost(recipeCost.getIngreVarCost() / unitsPerRecipe);
+        recipeCost.setUnitLaborVarCost(recipeCost.getLaborVarCost() / unitsPerRecipe);
+        recipeCost.setUnitPackVarCost(recipeCost.getPackVarCost() / unitsPerRecipe);
+
+        recipeCost.setUnitMarginalContribution((effectivePrice/unitsPerRecipe) - recipeCost.getUnitTotalVarCost());
+        recipeCost.setUnitFixCostDistribution(recipeCost.getFixCostDistribution() / unitsPerRecipe);
+        recipeCost.setUnitProfit(recipeCost.getProfit() / unitsPerRecipe);
+
         recipeCost.setFixCostDistribPercent(fixCostIncidence);
         recipeCost.setVariableCostPercent(getVariableCostPercent(totalVariableCost, effectivePrice));
-        recipeCost.setIngrePercent((int) (recipeCost.getIngreVarCost() / effectivePrice * 100));
-        recipeCost.setPackagingPercent((int) (recipeCost.getPackVarCost() / effectivePrice * 100));
+        recipeCost.setIngrePercent((int) (recipeCost.getIngreVarCost() / totalVariableCost * 100));
+        recipeCost.setPackagingPercent((int) (recipeCost.getPackVarCost() / totalVariableCost * 100));
         recipeCost.setMarginalContribPercent((int) (recipeCost.getMarginalContribution() / effectivePrice * 100 ));
         recipeCost.setProfitPercent((int) (recipeCost.getProfit() / effectivePrice * 100));
 
@@ -117,6 +127,17 @@ public class RecipeCostService implements IRecipeCostService{
             throw new IllegalArgumentException("Costo variable total no puede ser nulo y Precio efectivo no puede ser 0");
         }
         return (int) (Math.round(totalVariableCost /  effectivePrice * 100));
+    }
+
+    public Double getTotalUnitVariableCosts(List<RecipeDetail> recipeDetailList){
+        return recipeDetailList.stream()
+                .mapToDouble(RecipeDetail :: getUnitCostPerSupp)
+                .sum();
+    }
+
+    @Override
+    public List<RecipeCost> getAllRecipeCosts() {
+        return iRecipeCostRepo.findAll();
     }
 
 }

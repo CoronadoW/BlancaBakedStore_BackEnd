@@ -24,7 +24,7 @@ public class RecipeDetail {
     private Double costPerRecipe;
     private Double unitCostPerSupp;
     @ManyToOne
-    @JoinColumn(name = "fk_idRecipeCost",  nullable = true) //
+    @JoinColumn(name = "fk_idRecipeCost",  nullable = true)
     @JsonIgnore
     private RecipeCost recipeCost;
 

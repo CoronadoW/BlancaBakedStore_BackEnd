@@ -11,10 +11,13 @@ public interface IResaleProductService {
 
     ResaleProduct getResaleProduct(int productCode);
 
+    ResaleProduct getResaleProductByProdName(String productName);
+
     List<ResaleProduct> getAllResaleProd();
 
     ResaleProduct deleteResaleProd(int productCode);
 
     ResaleProduct editResaleProd(ResaleProdDto resaleProdDto);
 
+    ResaleProduct updatestock(int productCode, int newStock);
 }

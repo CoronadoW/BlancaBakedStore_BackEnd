@@ -1,11 +1,14 @@
 package com.coronado.blancabakedstore.controller;
 import com.coronado.blancabakedstore.dto.RecipeCostRequestDto;
 import com.coronado.blancabakedstore.dto.RecipeDto;
+import com.coronado.blancabakedstore.model.RecipeCost;
 import com.coronado.blancabakedstore.service.IRecipeCostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/recipeCost")
@@ -22,11 +25,22 @@ public class RecipeCostController {
                                                    @PathVariable Long id){
         return new ResponseEntity<>("Costo Receta creado exitosamente :" + iRecipeCostServ.createRecipeCost(recipeDto, id), HttpStatus.CREATED);
     }
-    /*
+
+    @GetMapping("/getAll")
+        public ResponseEntity<List<RecipeCost>> getAllRecipeCosts(){
+        return new ResponseEntity<>(iRecipeCostServ.getAllRecipeCosts(), HttpStatus.OK);
+    }
+
+
+
+
+
+
+/*
     @PostMapping("/create")
     public ResponseEntity<String> createRecipeCost(@RequestBody RecipeCostRequestDto recipeCostRequestDto){
         return new ResponseEntity<>("Costos por Receta creado satisfactoriamente: " + iRecipeCostServ.createRecipeCost(recipeCostRequestDto), HttpStatus.CREATED);
     }
-    */
+*/
 
 }

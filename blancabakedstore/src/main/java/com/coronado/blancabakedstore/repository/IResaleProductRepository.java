@@ -9,7 +9,11 @@ public interface IResaleProductRepository extends JpaRepository<ResaleProduct, L
 
     Optional<ResaleProduct> findByProductCode(int productCode);
 
+    Optional<ResaleProduct> findByProductName(String productName);
+
     boolean existsByProductCode(int productCode);
+
+    boolean existsByProductName(String productName);
 
     void deleteByProductCode(int productCode);
 

@@ -26,6 +26,9 @@ public class ResaleProductService implements IResaleProductService{
         if(iResaleProdRepo.existsByProductCode(resaleProdDto.getProductCode())){
             throw new EntityAlreadyExistsException("Producto ya existe con codigo: " + resaleProdDto.getProductCode());
         }
+        if(iResaleProdRepo.existsByProductName(resaleProdDto.getProductName())){
+            throw new EntityAlreadyExistsException("Producto ya existe con el nombre: " + resaleProdDto.getProductName());
+        }
         ResaleProduct resaleProduct = new ResaleProduct();
         return iResaleProdRepo.save(saveData(resaleProdDto, resaleProduct));
     }
@@ -35,6 +38,13 @@ public class ResaleProductService implements IResaleProductService{
         return iResaleProdRepo.findByProductCode(productCode)
                 .orElseThrow(() -> new EntityNotFoundException("Producto no encontrado con codigo: "+ productCode));
     }
+
+    @Override
+    public ResaleProduct getResaleProductByProdName(String productName) {
+        return iResaleProdRepo.findByProductName(productName)
+                .orElseThrow(() -> new EntityNotFoundException("Producto no encontrado con nombre: " + productName));
+    }
+
 
     @Override
     public List<ResaleProduct> getAllResaleProd() {
@@ -58,6 +68,18 @@ public class ResaleProductService implements IResaleProductService{
                 .orElseThrow(()  -> new EntityNotFoundException("Producto no encontrado con código:" + prodCode));
         return iResaleProdRepo.save(saveData(resaleProdDto, resaleProduct));
     }
+
+    @Transactional
+    @Override
+    public ResaleProduct updatestock(int productCode, int newStock) {
+        ResaleProduct resaleProduct = iResaleProdRepo.findByProductCode(productCode)
+                    .orElseThrow(() -> new EntityNotFoundException("Producto no encontrado con código: " + productCode));
+
+        resaleProduct.setStock(newStock);
+        return iResaleProdRepo.save(resaleProduct);
+        }
+
+
 
     //------------------------------Functions------------------------------
 

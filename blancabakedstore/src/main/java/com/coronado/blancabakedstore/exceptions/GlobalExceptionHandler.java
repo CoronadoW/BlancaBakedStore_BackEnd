@@ -16,4 +16,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> EntityAlreadyExistsExceptionHandler(EntityAlreadyExistsException exep){
         return new ResponseEntity<>(exep.getMessage(), HttpStatus.CONFLICT);
     }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<String> UnauthorizedExceptionHandler(UnauthorizedException exep){
+        return new ResponseEntity<>(exep.getMessage(), HttpStatus.UNAUTHORIZED);
+    }
 }

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/supply")
 public class SupplyController {
@@ -20,8 +21,8 @@ public class SupplyController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<String> createSupply(@RequestBody  Supply supply){
-        return new ResponseEntity<>("Insumo creado correctamente : " + iSuppServ.createSupply(supply), HttpStatus.CREATED);
+    public ResponseEntity<Supply> createSupply(@RequestBody  Supply supply){
+        return new ResponseEntity<>(iSuppServ.createSupply(supply), HttpStatus.CREATED);
     }
 
     @GetMapping("/get/{supplyCode}")

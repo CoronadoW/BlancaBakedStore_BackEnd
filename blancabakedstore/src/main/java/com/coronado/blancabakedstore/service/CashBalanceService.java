@@ -21,6 +21,8 @@ public class CashBalanceService implements ICashBalanceService {
         this.iCashBalRepo = iCashBalRepo;
     }
 
+
+
     public CashBalance createCashBalance(CashBalanceDto cashBalanceDto) {
         CashBalance cashBalance = new CashBalance();
         return iCashBalRepo.save(saveData(cashBalanceDto, cashBalance));
@@ -80,7 +82,7 @@ public class CashBalanceService implements ICashBalanceService {
     public CashBalance saveData(CashBalanceDto cashBalanceDto, CashBalance cashBalance){
         cashBalance.setDate(cashBalanceDto.getDate());
         cashBalance.setShift(cashBalanceDto.getShift());
-        cashBalance.setEmployeeName(cashBalanceDto.getEmployeeName());
+        cashBalance.setEmployeeName(cashBalanceDto.getUser());
         cashBalance.setOpeningCashBalance(cashBalanceDto.getOpeningCashBalance());
         cashBalance.setOpeningCashOnHand(cashBalanceDto.getOpeningCashOnHand());
         cashBalance.setCashSales(cashBalanceDto.getCashSales());
@@ -95,9 +97,10 @@ public class CashBalanceService implements ICashBalanceService {
         cashBalance.setCashPayments(cashBalanceDto.getCashPayments());
         cashBalance.setOtherPayments(cashBalanceDto.getOtherPayments());
         cashBalance.setTotalPayments(getTotalPayments(cashBalanceDto));
+        cashBalance.setObservations(cashBalanceDto.getObservations());
         return cashBalance;
     }
 
-    //Posible rest between TotalSales - TotalPayments
+    //Possible rest between TotalSales - TotalPayments
 
 }

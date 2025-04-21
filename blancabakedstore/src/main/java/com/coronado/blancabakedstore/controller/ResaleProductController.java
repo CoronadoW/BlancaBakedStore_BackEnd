@@ -12,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/resaleProduct")
+@CrossOrigin(origins = "http://localhost:4200")
 public class ResaleProductController {
 
     private final IResaleProductService iResaleProdServ;
@@ -21,8 +22,8 @@ public class ResaleProductController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<String> createResaleProduct(@RequestBody  ResaleProdDto resaleProdDto){
-        return new ResponseEntity<>("Producto creado correctamente " + iResaleProdServ.createResaleProd(resaleProdDto), HttpStatus.CREATED);
+    public ResponseEntity<ResaleProduct> createResaleProduct(@RequestBody  ResaleProdDto resaleProdDto){
+        return new ResponseEntity<>(  iResaleProdServ.createResaleProd(resaleProdDto), HttpStatus.CREATED);
     }
 
     @GetMapping("/get/{productCode}")
@@ -30,7 +31,11 @@ public class ResaleProductController {
         return new ResponseEntity<>(iResaleProdServ.getResaleProduct(productCode), HttpStatus.OK);
     }
 
-    @GetMapping("/getall")
+    @GetMapping("/getByProductName/{productName}")
+    public ResponseEntity<ResaleProduct> getByProductName(@PathVariable String productName){
+        return new ResponseEntity<>(iResaleProdServ.getResaleProductByProdName(productName), HttpStatus.OK);
+    }
+    @GetMapping("/getAll")
     public ResponseEntity<List<ResaleProduct>> getAllResaleProduct(){
         return new ResponseEntity<>(iResaleProdServ.getAllResaleProd(), HttpStatus.OK);
     }
@@ -43,6 +48,11 @@ public class ResaleProductController {
     @PutMapping("/edit")
     public ResponseEntity<String> editResaleProduct(@RequestBody ResaleProdDto resaleProdDto){
         return new ResponseEntity<>("Producto editado con exito: " + iResaleProdServ.editResaleProd(resaleProdDto), HttpStatus.OK);
+    }
+
+    @PutMapping("/edit-stock/{productCode}")
+    public ResponseEntity<ResaleProduct> updateStock(@PathVariable int productCode, @RequestParam int newStock) {
+        return new ResponseEntity<>(iResaleProdServ.updatestock(productCode, newStock), HttpStatus.OK);
     }
 
 

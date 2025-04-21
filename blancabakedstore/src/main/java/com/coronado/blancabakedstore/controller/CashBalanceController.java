@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/cashBalance")
 public class CashBalanceController {
@@ -21,12 +22,12 @@ public class CashBalanceController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<String> createCashBalance(CashBalanceDto cashBalanceDto){
-        return new ResponseEntity<>("Arqueo de caja creado con exito: " + iCashBalServ.createCashBalance(cashBalanceDto), HttpStatus.CREATED);
+    public ResponseEntity<CashBalance> createCashBalance(@RequestBody CashBalanceDto cashBalanceDto){
+        return new ResponseEntity<>( iCashBalServ.createCashBalance(cashBalanceDto), HttpStatus.CREATED);
     }
 
     @GetMapping("/get/{id}")
-    public ResponseEntity<CashBalance> getCashBalance(Long id){
+    public ResponseEntity<CashBalance> getCashBalance(@PathVariable Long id){
         return new ResponseEntity<>(iCashBalServ.getCashBalance(id), HttpStatus.OK);
     }
 
@@ -36,7 +37,7 @@ public class CashBalanceController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteCashBalance(Long id){
+    public ResponseEntity<String> deleteCashBalance(@PathVariable Long id){
         return new ResponseEntity<>("Arqueo de caja borrado con exito: " + iCashBalServ.deleteCashBalance(id), HttpStatus.OK);
     }
 

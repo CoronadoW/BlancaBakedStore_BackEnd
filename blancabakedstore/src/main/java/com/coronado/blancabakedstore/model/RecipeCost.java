@@ -22,7 +22,7 @@ public class RecipeCost {
     private Long id;
     private String recipeName;
     private int markingMargin;
-    private int unitsPerRecip;
+    private int unitsPerRecipe;
 
     @OneToMany(mappedBy = "recipeCost", cascade = CascadeType.ALL) //, orphanRemoval = true
     @JsonIgnore
@@ -33,16 +33,26 @@ public class RecipeCost {
     private Double packVarCost;
     private Double laborVarCost;
     private int effectivePrice;
+    private int unitEffectivePrice;
     private Double marginalContribution;
     private Double fixCostDistribution;
     private Double profit;
+    private Double unitTotalVarCost;
+    private Double unitIngreVarCost;
+    private Double unitLaborVarCost;
+    private Double unitPackVarCost;
+    private Double unitMarginalContribution;
+    private Double unitFixCostDistribution;
+    private Double unitProfit;
     private int variableCostPercent;
     private int ingrePercent;
-    private int packagingPercent;
     private int variableLaborPercent;
+    private int packagingPercent;
     private int marginalContribPercent;
     private int fixCostDistribPercent;
     private int profitPercent;
+
+
 
     @Override
     public String toString() {
@@ -50,7 +60,7 @@ public class RecipeCost {
                 "id=" + id +
                 ", recipeName='" + recipeName + '\'' +
                 ", markingMargin=" + markingMargin +
-                ", unitsPerRecip=" + unitsPerRecip +
+                ", unitsPerRecip=" + unitsPerRecipe +
                 //Null added to avoid StackOverFlow error because of recursive
                 ", recipeDetailList=" + (recipeDetailList != null ? recipeDetailList.size() : "null") +
                 ", variableCost=" + variableCost +
@@ -58,13 +68,21 @@ public class RecipeCost {
                 ", packVarCost=" + packVarCost +
                 ", laborVarCost=" + laborVarCost +
                 ", effectivePrice=" + effectivePrice +
+                ", unitEffectivePrice=" + unitEffectivePrice +
                 ", marginalContribution=" + marginalContribution +
                 ", fixCostDistribution=" + fixCostDistribution +
                 ", profit=" + profit +
+                ", unitTotalVarCost=" + unitTotalVarCost +
+                ", unitIngreVarCost=" + unitIngreVarCost +
+                ", unitLaborVarCost=" + unitLaborVarCost +
+                ", unitPackVarCost=" + unitPackVarCost +
+                ", unitMarginalContribution=" + unitMarginalContribution +
+                ", unitFixCostDistribution=" + unitFixCostDistribution +
+                ", unitProfit=" + unitProfit +
                 ", variableCostPercent=" + variableCostPercent +
                 ", ingrePercent=" + ingrePercent +
-                ", packagingPercent=" + packagingPercent +
                 ", variableLaborPercent=" + variableLaborPercent +
+                ", packagingPercent=" + packagingPercent +
                 ", marginalContribPercent=" + marginalContribPercent +
                 ", fixCostDistribPercent=" + fixCostDistribPercent +
                 ", profitPercent=" + profitPercent +
