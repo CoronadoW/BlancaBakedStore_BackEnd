@@ -12,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/recipeCost")
+@CrossOrigin(origins = "http://localhost:4200")
 public class RecipeCostController {
     private final IRecipeCostService iRecipeCostServ;
     @Autowired
@@ -20,27 +21,26 @@ public class RecipeCostController {
     }
 
 
-    @PostMapping("/create/{id}")
-    public ResponseEntity<String> createRecipeCost(@RequestBody RecipeDto recipeDto,
-                                                   @PathVariable Long id){
-        return new ResponseEntity<>("Costo Receta creado exitosamente :" + iRecipeCostServ.createRecipeCost(recipeDto, id), HttpStatus.CREATED);
+    @PostMapping("/create")
+    public ResponseEntity<RecipeCost> createRecipeCost(@RequestBody RecipeDto recipeDto){
+        return new ResponseEntity<>(iRecipeCostServ.createRecipeCost(recipeDto), HttpStatus.CREATED);
     }
 
     @GetMapping("/getAll")
-        public ResponseEntity<List<RecipeCost>> getAllRecipeCosts(){
+    public ResponseEntity<List<RecipeCost>> getAllRecipeCosts(){
         return new ResponseEntity<>(iRecipeCostServ.getAllRecipeCosts(), HttpStatus.OK);
     }
 
-
-
-
-
-
-/*
-    @PostMapping("/create")
-    public ResponseEntity<String> createRecipeCost(@RequestBody RecipeCostRequestDto recipeCostRequestDto){
-        return new ResponseEntity<>("Costos por Receta creado satisfactoriamente: " + iRecipeCostServ.createRecipeCost(recipeCostRequestDto), HttpStatus.CREATED);
+    @GetMapping("/get/{recipeName}")
+    public ResponseEntity<RecipeCost> getRecipeByName(@PathVariable String recipeName) {
+        RecipeCost recipe = iRecipeCostServ.getRecipeByName(recipeName.toUpperCase());
+        return ResponseEntity.ok(recipe);
     }
-*/
+
+    @DeleteMapping("/delete/{recipeName}")
+    public ResponseEntity<Void> deleteRecipeCost(@PathVariable String recipeName){
+        iRecipeCostServ.deleteRecipeCost(recipeName);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 
 }

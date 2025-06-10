@@ -18,13 +18,18 @@ public class ResaleProdDto {
     private String productName;     //Insert
     private String unitType;        //Insert
     private int stock;              //Insert
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
-    private LocalDate expireDate;   //Insert
     private int costPrice;          //Insert
     private int packagingPrice;     //Insert
     private int deliveryPrice;      //Insert
     private int markingMargin;      //Insert
     private int commission;         //Insert
+
+    private ExpirationDto expDto;
+
+    //@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+    //private LocalDate buyDate;
+    //@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+    //private LocalDate expireDate;   //Insert
 
 }
 

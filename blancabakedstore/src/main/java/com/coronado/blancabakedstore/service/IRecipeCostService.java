@@ -10,10 +10,13 @@ import java.util.List;
 
 public interface IRecipeCostService {
 
-    RecipeCost createRecipeCost(RecipeDto recipeDto, Long id);
+    RecipeCost createRecipeCost(RecipeDto recipeDto);
+
+    RecipeCost getRecipeByName(String recipeName);
 
     List<RecipeCost> getAllRecipeCosts();
 
+    void deleteRecipeCost(String recipeName);
 
     //RecipeCost createRecipeCost(RecipeDto recipeDto, FinancialDto financialDto);
     //RecipeCost createRecipeCost(RecipeCostRequestDto recipeCostRequestDto);

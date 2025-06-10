@@ -11,8 +11,9 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Setter
 @Getter
-public class FinancialDto {
+//Dto gets data to find CashBalance through its date and shift.
+public class BalanceDto {
 
-    private Double normalFixCostDto;
-    private Double normalSaleAverageDto;
+    private LocalDate balanceDateDto;
+    private String balanceShiftDto;
 }

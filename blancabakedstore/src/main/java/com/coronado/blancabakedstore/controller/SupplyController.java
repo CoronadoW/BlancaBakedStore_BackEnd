@@ -26,7 +26,7 @@ public class SupplyController {
     }
 
     @GetMapping("/get/{supplyCode}")
-    public ResponseEntity<Supply> getSuppy(@PathVariable  int supplyCode){
+    public ResponseEntity<Supply> getSupply(@PathVariable  int supplyCode){
         return new ResponseEntity<>(iSuppServ.getSupply(supplyCode), HttpStatus.OK);
     }
 

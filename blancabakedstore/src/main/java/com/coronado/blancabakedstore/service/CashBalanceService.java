@@ -1,6 +1,8 @@
 package com.coronado.blancabakedstore.service;
 
+import com.coronado.blancabakedstore.dto.BalanceDto;
 import com.coronado.blancabakedstore.dto.CashBalanceDto;
+import com.coronado.blancabakedstore.exceptions.EntityAlreadyExistsException;
 import com.coronado.blancabakedstore.exceptions.EntityNotFoundException;
 import com.coronado.blancabakedstore.model.CashBalance;
 import com.coronado.blancabakedstore.repository.ICashBalanceRepository;
@@ -24,6 +26,9 @@ public class CashBalanceService implements ICashBalanceService {
 
 
     public CashBalance createCashBalance(CashBalanceDto cashBalanceDto) {
+        if(iCashBalRepo.existsByDateAndShift(cashBalanceDto.getDate(), cashBalanceDto.getShift())){
+            throw new EntityAlreadyExistsException("Cash balance already exists with that date and shift");
+        }
         CashBalance cashBalance = new CashBalance();
         return iCashBalRepo.save(saveData(cashBalanceDto, cashBalance));
     }
@@ -34,15 +39,29 @@ public class CashBalanceService implements ICashBalanceService {
     }
 
     public List<CashBalance> getAllCashBalance(){
-        return iCashBalRepo.findAll();
+        return iCashBalRepo.findAllByOrderByDateDesc();
+    }
+
+    //Method to get balance by date and shift
+    public CashBalance getCashBalanceByDateAndShift(BalanceDto balanceDto){
+        return iCashBalRepo.findByDateAndShift(balanceDto.getBalanceDateDto(), balanceDto.getBalanceShiftDto())
+                .orElseThrow(()-> new EntityNotFoundException("Entity not found"));
     }
 
     public List<CashBalance> getCashBalanceByDate(LocalDate date){
-        List<CashBalance> cashBalByDateList = iCashBalRepo.findByDate(date);
+        List<CashBalance> cashBalByDateList = iCashBalRepo.findByDateOrderByDateDesc(date);
         if(cashBalByDateList.isEmpty()){
-            throw new ResponseStatusException(HttpStatus.OK, "No se encontró Arqueo de Caja con fecha: " + date);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No se encontró Arqueo de Caja con fecha: " + date);
         }
         return cashBalByDateList;
+    }
+
+    public List<CashBalance> getCashBalanceByShift(String shift){
+        List<CashBalance> cashBalanceList = iCashBalRepo.findByShiftOrderByDateDesc(shift);
+        if(cashBalanceList.isEmpty()){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No se encontró Arqueos de caja con turno : " + shift);
+        }
+        return cashBalanceList;
     }
 
     public CashBalance deleteCashBalance(Long id){
@@ -67,9 +86,10 @@ public class CashBalanceService implements ICashBalanceService {
     }
 
     public Double getControl(CashBalanceDto cashBalanceDto){
-        Double totalSales =  getTotalSales(cashBalanceDto);
-        Double systemSales = cashBalanceDto.getSystemTotalSales();
-        return totalSales - systemSales;
+        return getEndingCashBalance(cashBalanceDto) - cashBalanceDto.getSystemTotalSales();
+       // Double totalSales =  getTotalSales(cashBalanceDto);
+       // Double systemSales = cashBalanceDto.getSystemTotalSales();
+       //  return totalSales - systemSales;
     }
 
     public Double getTotalPayments(CashBalanceDto cashBalanceDto){
@@ -78,11 +98,15 @@ public class CashBalanceService implements ICashBalanceService {
         return cashPay + otherPay;
     }
 
+    public Double getEndingCashBalance(CashBalanceDto cashBalanceDto){
+        return getTotalSales(cashBalanceDto) + getTotalPayments(cashBalanceDto);
+    }
+
     //Set data into variable cashBalance
     public CashBalance saveData(CashBalanceDto cashBalanceDto, CashBalance cashBalance){
         cashBalance.setDate(cashBalanceDto.getDate());
         cashBalance.setShift(cashBalanceDto.getShift());
-        cashBalance.setEmployeeName(cashBalanceDto.getUser());
+        cashBalance.setEmployeeName(cashBalanceDto.getEmployeeName());
         cashBalance.setOpeningCashBalance(cashBalanceDto.getOpeningCashBalance());
         cashBalance.setOpeningCashOnHand(cashBalanceDto.getOpeningCashOnHand());
         cashBalance.setCashSales(cashBalanceDto.getCashSales());
@@ -92,15 +116,14 @@ public class CashBalanceService implements ICashBalanceService {
         cashBalance.setSystemTotalSales(cashBalanceDto.getSystemTotalSales());
         cashBalance.setTotalSales(getTotalSales(cashBalanceDto));
         cashBalance.setControl(getControl(cashBalanceDto));
-        cashBalance.setEndingCashBalance(getTotalSales(cashBalanceDto));
-        cashBalance.setUser(cashBalanceDto.getUser());
         cashBalance.setCashPayments(cashBalanceDto.getCashPayments());
         cashBalance.setOtherPayments(cashBalanceDto.getOtherPayments());
         cashBalance.setTotalPayments(getTotalPayments(cashBalanceDto));
+        cashBalance.setEndingCashBalance(getEndingCashBalance(cashBalanceDto));
         cashBalance.setObservations(cashBalanceDto.getObservations());
         return cashBalance;
     }
 
-    //Possible rest between TotalSales - TotalPayments
+
 
 }

@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -22,4 +24,5 @@ public class FinancialAnalysis {
     private Double normalFixCost;
     private Double normalSaleAverage;
     private int fixCostIncidence;
+
 }

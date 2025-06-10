@@ -1,16 +1,16 @@
 package com.coronado.blancabakedstore.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -22,17 +22,15 @@ public class ResaleProduct {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    private int productCode;        //Insert
-    private String productName;     //Insert
-    private String unitType;        //Insert
-    private int stock;              //Insert
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
-    private LocalDate expireDate;   //Insert
-    private int costPrice;          //Insert
-    private int packagingPrice;     //Insert
-    private int deliveryPrice;      //Insert
-    private int markingMargin;      //Insert
-    private int commission;         //Insert
+    private int productCode;
+    private String productName;
+    private String unitType;
+    private int stock;
+    private int costPrice;
+    private int packagingPrice;
+    private int deliveryPrice;
+    private int markingMargin;
+    private int commission;
     private int totalCost;                      //F (Function)
     private int salePrice;                      //F
     private int marginalContribution;           //F
@@ -40,6 +38,9 @@ public class ResaleProduct {
     private int salePriceWithCommission;        //F
     private int marginalContribWithCommission;  //F
     private int contribMarginWithCommission;    //F
+    @OneToMany(mappedBy = "resaleProduct", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<Expiration> expirations = new ArrayList<>();
 
     @Override
     public String toString() {
@@ -49,7 +50,6 @@ public class ResaleProduct {
                 ", productName='" + productName + '\'' +
                 ", unitType='" + unitType + '\'' +
                 ", stock=" + stock +
-                ", expireDate=" + expireDate +
                 ", costPrice=" + costPrice +
                 ", packagingPrice=" + packagingPrice +
                 ", deliveryPrice=" + deliveryPrice +

@@ -1,6 +1,8 @@
 package com.coronado.blancabakedstore.controller;
 
+import com.coronado.blancabakedstore.dto.ExpirationDto;
 import com.coronado.blancabakedstore.dto.ResaleProdDto;
+import com.coronado.blancabakedstore.dto.ResaleProdWithNearestDateDto;
 import com.coronado.blancabakedstore.model.ResaleProduct;
 import com.coronado.blancabakedstore.service.IResaleProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,9 +24,27 @@ public class ResaleProductController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<ResaleProduct> createResaleProduct(@RequestBody  ResaleProdDto resaleProdDto){
+    public ResponseEntity<ResaleProdWithNearestDateDto> createResaleProduct(@RequestBody  ResaleProdDto resaleProdDto){
         return new ResponseEntity<>(  iResaleProdServ.createResaleProd(resaleProdDto), HttpStatus.CREATED);
     }
+
+    @GetMapping("/getWithNearestDate/{productCode}")
+    public ResponseEntity<ResaleProdWithNearestDateDto> getResProdWithNearestDate(@PathVariable int productCode){
+        return new ResponseEntity<>(iResaleProdServ.getResaleProdWNearestExpByCode(productCode), HttpStatus.OK);
+    }
+
+    @GetMapping("/getWithNearestDateByName/{productName}")
+    public ResponseEntity<ResaleProdWithNearestDateDto> getResProdWithNearestDateByDate(@PathVariable String productName){
+        return new ResponseEntity<>(iResaleProdServ.getResaleProdWNearestExpByName(productName), HttpStatus.OK);
+    }
+
+
+    @GetMapping("/getAllWithNearestDate")
+    public ResponseEntity<List<ResaleProdWithNearestDateDto>> getAllWithNearestDate(){
+        return new ResponseEntity<>(iResaleProdServ.getAllWithNearestExpDate(), HttpStatus.OK);
+    }
+
+    /*--------------Endpoints without logic in expirationDate--------------------------------------------*/
 
     @GetMapping("/get/{productCode}")
     public ResponseEntity<ResaleProduct> getResaleProduct(@PathVariable int productCode){

@@ -20,5 +20,6 @@ public interface ISupplyRepository extends JpaRepository <Supply,Long>{
 
     List<Supply> findBySupplyTypeContainingIgnoreCase(String supplyType);
 
+    boolean existsBySupplyName(String supplyName);
 
 }

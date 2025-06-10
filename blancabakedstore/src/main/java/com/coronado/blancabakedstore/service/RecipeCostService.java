@@ -3,6 +3,8 @@ package com.coronado.blancabakedstore.service;
 import com.coronado.blancabakedstore.dto.FinancialDto;
 import com.coronado.blancabakedstore.dto.RecipeCostRequestDto;
 import com.coronado.blancabakedstore.dto.RecipeDto;
+import com.coronado.blancabakedstore.exceptions.EntityAlreadyExistsException;
+import com.coronado.blancabakedstore.exceptions.EntityNotFoundException;
 import com.coronado.blancabakedstore.model.FinancialAnalysis;
 import com.coronado.blancabakedstore.model.RecipeCost;
 import com.coronado.blancabakedstore.model.RecipeDetail;
@@ -11,7 +13,8 @@ import com.coronado.blancabakedstore.repository.IRecipeDetailRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 @Service
@@ -33,7 +36,10 @@ public class RecipeCostService implements IRecipeCostService{
 
 
     @Transactional
-    public RecipeCost createRecipeCost(RecipeDto recipeDto, Long id){
+    public RecipeCost createRecipeCost(RecipeDto recipeDto){
+        if(iRecipeCostRepo.existsByRecipeName(recipeDto.getRecipeName())){
+            throw new EntityAlreadyExistsException("Recipe already exists");
+        }
 
         // Creates "recipeDetailList" through RecipeDetailService using SupplyPerRecipeDto in RecipeDto
         List<RecipeDetail> recipeDetailList = recDetServ.createRecipeDetailList(recipeDto);
@@ -43,7 +49,7 @@ public class RecipeCostService implements IRecipeCostService{
         int markingMargin = recipeDto.getMarkingMarginDto();
         int effectivePrice = getEffectivePriceRoundedTo5(totalVariableCost, markingMargin);
         Double marginalContribution = getMarginalContribution(totalVariableCost, effectivePrice);
-        int fixCostIncidence = finAnaServ.getFixCostIncidenceById(id);
+        int fixCostIncidence = finAnaServ.getLastFinancialAnalysis().getFixCostIncidence();
         System.out.println("Fix Cost Incidence got satisfactory: " + fixCostIncidence);
         int unitsPerRecipe = recipeDto.getUnitsPerRecipeDto();
         
@@ -51,30 +57,29 @@ public class RecipeCostService implements IRecipeCostService{
         recipeCost.setRecipeName(recipeDto.getRecipeName());
         recipeCost.setMarkingMargin(markingMargin);
         recipeCost.setUnitsPerRecipe(unitsPerRecipe);
-        //recipeCost.setRecipeDetailList(recipeDetailList);
-        recipeCost.setVariableCost(totalVariableCost);
+        recipeCost.setVariableCost(roundToTwoDecimals(totalVariableCost));
 
-        recipeCost.setIngreVarCost(getVariableCostBySuppType(recipeDetailList, "Ingrediente" ));
-        recipeCost.setPackVarCost(getVariableCostBySuppType(recipeDetailList, "Packaging"));
-        recipeCost.setLaborVarCost(getVariableCostBySuppType(recipeDetailList, "Labor"));
+        recipeCost.setIngreVarCost(roundToTwoDecimals(getVariableCostBySuppType(recipeDetailList, "Ingrediente" )));
+        recipeCost.setPackVarCost(roundToTwoDecimals(getVariableCostBySuppType(recipeDetailList, "Packaging")));
+        recipeCost.setLaborVarCost(roundToTwoDecimals(getVariableCostBySuppType(recipeDetailList, "Labor")));
 
         recipeCost.setEffectivePrice(effectivePrice);
         recipeCost.setUnitEffectivePrice(effectivePrice / unitsPerRecipe);
 
-        recipeCost.setMarginalContribution(marginalContribution);
-        recipeCost.setFixCostDistribution( effectivePrice * fixCostIncidence / 100.0);
-        recipeCost.setProfit(marginalContribution - recipeCost.getFixCostDistribution());
+        recipeCost.setMarginalContribution(roundToTwoDecimals(marginalContribution));
+        recipeCost.setFixCostDistribution( roundToTwoDecimals(effectivePrice * fixCostIncidence / 100.0));
+        recipeCost.setProfit(roundToTwoDecimals(marginalContribution - recipeCost.getFixCostDistribution()));
 
-        recipeCost.setUnitTotalVarCost(getTotalUnitVariableCosts(recipeDetailList));
+        recipeCost.setUnitTotalVarCost(roundToTwoDecimals(getTotalUnitVariableCosts(recipeDetailList)));
         System.out.println("El total de los costos unitarios variables es: " + getTotalUnitVariableCosts(recipeDetailList));
 
-        recipeCost.setUnitIngreVarCost(recipeCost.getIngreVarCost() / unitsPerRecipe);
-        recipeCost.setUnitLaborVarCost(recipeCost.getLaborVarCost() / unitsPerRecipe);
-        recipeCost.setUnitPackVarCost(recipeCost.getPackVarCost() / unitsPerRecipe);
+        recipeCost.setUnitIngreVarCost(roundToTwoDecimals(recipeCost.getIngreVarCost() / unitsPerRecipe));
+        recipeCost.setUnitLaborVarCost(roundToTwoDecimals(recipeCost.getLaborVarCost() / unitsPerRecipe));
+        recipeCost.setUnitPackVarCost(roundToTwoDecimals(recipeCost.getPackVarCost() / unitsPerRecipe));
 
-        recipeCost.setUnitMarginalContribution((effectivePrice/unitsPerRecipe) - recipeCost.getUnitTotalVarCost());
-        recipeCost.setUnitFixCostDistribution(recipeCost.getFixCostDistribution() / unitsPerRecipe);
-        recipeCost.setUnitProfit(recipeCost.getProfit() / unitsPerRecipe);
+        recipeCost.setUnitMarginalContribution(roundToTwoDecimals((double)effectivePrice/unitsPerRecipe - recipeCost.getUnitTotalVarCost()));
+        recipeCost.setUnitFixCostDistribution(roundToTwoDecimals(recipeCost.getFixCostDistribution() / unitsPerRecipe));
+        recipeCost.setUnitProfit(roundToTwoDecimals(recipeCost.getProfit() / unitsPerRecipe));
 
         recipeCost.setFixCostDistribPercent(fixCostIncidence);
         recipeCost.setVariableCostPercent(getVariableCostPercent(totalVariableCost, effectivePrice));
@@ -94,6 +99,25 @@ public class RecipeCostService implements IRecipeCostService{
         recipeCost.setRecipeDetailList(recipeDetailList);
 
         return iRecipeCostRepo.save(reCost);
+    }
+
+    @Override
+    public RecipeCost getRecipeByName(String recipeName) {
+        return iRecipeCostRepo.findByRecipeName(recipeName)
+                .orElseThrow(() -> new EntityNotFoundException("Recipe Cost not found"));
+    }
+
+    @Override
+    public List<RecipeCost> getAllRecipeCosts() {
+        return iRecipeCostRepo.findAll();
+    }
+
+
+    @Override
+    public void deleteRecipeCost(String recipeName) {
+        RecipeCost recipeCost = iRecipeCostRepo.findByRecipeName(recipeName)
+               .orElseThrow(() ->  new EntityNotFoundException("Entity not found"));
+        iRecipeCostRepo.delete(recipeCost);
     }
 
     public Double getTotalVariableCost(List<RecipeDetail> recipeDetailList){
@@ -135,9 +159,15 @@ public class RecipeCostService implements IRecipeCostService{
                 .sum();
     }
 
-    @Override
-    public List<RecipeCost> getAllRecipeCosts() {
-        return iRecipeCostRepo.findAll();
+    public Double roundToTwoDecimals(Double value){
+        if(value == null) return null;
+        return BigDecimal.valueOf(value)
+                .setScale(2, RoundingMode.HALF_UP)
+                .doubleValue();
     }
+
+
+
+
 
 }

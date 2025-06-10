@@ -7,7 +7,9 @@ import java.util.List;
 
 public interface IFinancialAnalysisService {
 
-    String createFinancialAnalysis(FinancialDto financialDto);
+    FinancialAnalysis createFinancialAnalysis(FinancialDto financialDto);
+
+    FinancialAnalysis getLastFinancialAnalysis();
 
     int calculateFixCostIncidence(FinancialDto financialDto);
 

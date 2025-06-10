@@ -3,7 +3,6 @@ package com.coronado.blancabakedstore.controller;
 import com.coronado.blancabakedstore.dto.FinancialDto;
 import com.coronado.blancabakedstore.model.FinancialAnalysis;
 import com.coronado.blancabakedstore.service.IFinancialAnalysisService;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/financialAnalysis")
+@CrossOrigin(origins = "http://localhost:4200")
 public class FinancialAnalysisController {
 
     private final IFinancialAnalysisService iFinAnaServ;
@@ -22,8 +22,13 @@ public class FinancialAnalysisController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<String> createFinancialAnalysis(@RequestBody FinancialDto financialDto){
+    public ResponseEntity<FinancialAnalysis> createFinancialAnalysis(@RequestBody FinancialDto financialDto){
         return new ResponseEntity<>(iFinAnaServ.createFinancialAnalysis(financialDto), HttpStatus.CREATED);
+    }
+
+    @GetMapping("/getLast")
+    public ResponseEntity<FinancialAnalysis> getLastFinancialAnalysis(){
+        return new ResponseEntity<>(iFinAnaServ.getLastFinancialAnalysis(), HttpStatus.OK);
     }
 
     @GetMapping("/get/{id}")

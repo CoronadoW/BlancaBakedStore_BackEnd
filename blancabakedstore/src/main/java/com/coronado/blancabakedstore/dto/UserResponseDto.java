@@ -5,14 +5,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
-
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Setter
 @Getter
-public class FinancialDto {
+public class UserResponseDto {
 
-    private Double normalFixCostDto;
-    private Double normalSaleAverageDto;
+    private String userName;
+    private String roleType;
+
 }

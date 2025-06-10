@@ -1,6 +1,7 @@
 package com.coronado.blancabakedstore.controller;
 
 import com.coronado.blancabakedstore.dto.UserDto;
+import com.coronado.blancabakedstore.dto.UserResponseDto;
 import com.coronado.blancabakedstore.model.User;
 import com.coronado.blancabakedstore.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,23 +24,23 @@ public class UserController {
 
 
     @PostMapping("/create")
-    public ResponseEntity<User> createUser(@RequestBody UserDto userDto){
+    public ResponseEntity<UserResponseDto> createUser(@RequestBody UserDto userDto){
         return new ResponseEntity<>(iUserServ.createUser(userDto), HttpStatus.CREATED);
     }
 
     @GetMapping("/get/{userName}")
-    public ResponseEntity<User> getUserByUserName(@PathVariable String userName){
+    public ResponseEntity<UserResponseDto> getUserByUserName(@PathVariable String userName){
         return new ResponseEntity<>(iUserServ.getUserByUserName(userName), HttpStatus.OK);
     }
 
     @GetMapping("/getAll")
-    public ResponseEntity<List<User>> getAllUsers(){
+    public ResponseEntity<List<UserResponseDto>> getAllUsers(){
         return new ResponseEntity<>(iUserServ.getAllUsers(), HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{userName}")
-    public ResponseEntity<User> deleteUser(@PathVariable String userName){
-        return new ResponseEntity<>(iUserServ.deleteUser(userName), HttpStatus.OK);
+    public ResponseEntity<String> deleteUser(@PathVariable String userName){
+        return new ResponseEntity<>("User deleted succesfully: " + iUserServ.deleteUser(userName), HttpStatus.OK);
     }
 
     @PutMapping("/edit")

@@ -23,7 +23,7 @@ public class SupplyService implements ISupplyService{
 
     @Override
     public Supply createSupply(Supply supply) {
-        if(iSuppRepo.existsBySupplyCode(supply.getSupplyCode())){
+        if(iSuppRepo.existsBySupplyCode(supply.getSupplyCode()) || iSuppRepo.existsBySupplyName(supply.getSupplyName())){
             throw new EntityAlreadyExistsException("Insumo ya existe con el codigo: " + supply.getSupplyCode());
         }
         return iSuppRepo.save(supply);

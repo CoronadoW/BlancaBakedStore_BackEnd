@@ -1,12 +1,11 @@
 package com.coronado.blancabakedstore.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.time.LocalDate;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -20,10 +19,27 @@ public class PurchasedProduct {
     private Long id;
     private String purProdName;
     private String purProdBrand;
-    private int cost;
-    private LocalDate purchasedDate;
+    private Double purProdUnitCost;
+    private Double purProdQty;
+    private Double totalCost;
+
+    @JsonBackReference
     @ManyToOne
-    private PreSeller preSeller;
+    @JoinColumn(name= "id_purchase")
+    private Purchase purchase;
 
 
+
+    @Override
+    public String toString() {
+        return "PurchasedProduct{" +
+                "id=" + id +
+                ", purProdName='" + purProdName + '\'' +
+                ", purProdBrand='" + purProdBrand + '\'' +
+                ", purProdCost='" + purProdUnitCost + '\'' +
+                ", purProdQty='" + purProdQty + '\'' +
+                ", totalCost='" + totalCost + '\'' +
+                ", purchaseId=" + ( purchase !=null ? purchase.getId() : null ) +
+                '}';
+    }
 }

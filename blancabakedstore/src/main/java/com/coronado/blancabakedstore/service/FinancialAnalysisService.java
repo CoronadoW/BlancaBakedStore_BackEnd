@@ -6,6 +6,7 @@ import com.coronado.blancabakedstore.model.FinancialAnalysis;
 import com.coronado.blancabakedstore.repository.IFinancialAnalysisRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,15 +22,20 @@ public class FinancialAnalysisService implements IFinancialAnalysisService {
     }
 
     @Transactional
-    public String createFinancialAnalysis(FinancialDto financialDto) {
+    public FinancialAnalysis createFinancialAnalysis(FinancialDto financialDto) {
         FinancialAnalysis financialAnalysis = new FinancialAnalysis();
 
         financialAnalysis.setNormalFixCost(financialDto.getNormalFixCostDto());
         financialAnalysis.setNormalSaleAverage(financialDto.getNormalSaleAverageDto());
         financialAnalysis.setFixCostIncidence(calculateFixCostIncidence(financialDto));
 
-        iFinAnaRepo.save(financialAnalysis);
-        return "Incidencia de costo fijos obtenido con exito : " + financialAnalysis.getFixCostIncidence() + "%";
+        return iFinAnaRepo.save(financialAnalysis);
+       // return "Incidencia de costo fijos obtenido con exito : " + financialAnalysis.getFixCostIncidence() + "%";
+    }
+
+    public FinancialAnalysis getLastFinancialAnalysis(){
+        return iFinAnaRepo.findTopByOrderByIdDesc()
+                .orElseThrow(() -> new EntityNotFoundException("Incidencia de costos fijos no encontrado"));
     }
 
     public int calculateFixCostIncidence(FinancialDto financialDto) {

@@ -17,7 +17,7 @@ public class CashBalanceDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
     private LocalDate date;
     private String shift; //For shift of employees
-    private String user; /*????*/
+    private String employeeName; /*????*/
     private Double openingCashBalance;
     private Double openingCashOnHand;
     private Double cashSales;
@@ -25,7 +25,6 @@ public class CashBalanceDto {
     private Double transferSales;
     private Double qrSales;
     private Double systemTotalSales;
-    private Double endingCashBalance;
     private Double cashPayments;
     private Double otherPayments;
     private String observations;

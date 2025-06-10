@@ -1,5 +1,6 @@
 package com.coronado.blancabakedstore.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -25,7 +26,7 @@ public class RecipeDetail {
     private Double unitCostPerSupp;
     @ManyToOne
     @JoinColumn(name = "fk_idRecipeCost",  nullable = true)
-    @JsonIgnore
+    @JsonBackReference //Instead JsonIgnore to avoid serialization and keep List available
     private RecipeCost recipeCost;
 
     @Override

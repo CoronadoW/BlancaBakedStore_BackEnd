@@ -35,11 +35,10 @@ public class CashBalance {
     private Double systemTotalSales;
     private Double totalSales;  //Function
     private Double control;     //Function  TotalSales - SystemTotalSales
-    private Double endingCashBalance; // = totalSales
-    private String user;
     private Double cashPayments;
     private Double otherPayments;
     private Double totalPayments; //Function cashPayments + otherPayments
+    private Double endingCashBalance;
     private String observations;
 
     @Override
@@ -58,8 +57,6 @@ public class CashBalance {
                 ", systemTotalSales=" + systemTotalSales +
                 ", totalSales=" + totalSales +
                 ", control=" + control +
-                ", endingCashBalance=" + endingCashBalance +
-                ", user='" + user + '\'' +
                 ", cashPayments=" + cashPayments +
                 ", otherPayments=" + otherPayments +
                 ", totalPayments=" + totalPayments +

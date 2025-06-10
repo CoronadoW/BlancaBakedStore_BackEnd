@@ -1,6 +1,7 @@
 package com.coronado.blancabakedstore.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,7 +26,7 @@ public class RecipeCost {
     private int unitsPerRecipe;
 
     @OneToMany(mappedBy = "recipeCost", cascade = CascadeType.ALL) //, orphanRemoval = true
-    @JsonIgnore
+    @JsonManagedReference //Instead JsonIgnore to avoid serialization and keep available the list in the RecipeCost
     private List<RecipeDetail> recipeDetailList = new ArrayList<>();
 
     private Double variableCost;
